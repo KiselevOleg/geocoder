@@ -41,9 +41,9 @@ class TestUtilTest {
   }
   @Test
   void test4() {
-        /*int actial = TestUtil.sum(1,2);
+        /*int actual = TestUtil.sum(1,2);
         int expected = 3;
-        assertEquals(expected, actial);*/
+        assertEquals(expected, actual);*/
 
     Assertions.assertEquals(3, ru.kubsu.geocoder.util.TestUtil.sum(1,2));
     Assertions.assertEquals(300, ru.kubsu.geocoder.util.TestUtil.sum(99,201));
