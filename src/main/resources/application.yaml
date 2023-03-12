@@ -1,6 +1,6 @@
 spring:
     datasource:
-        url: jdbc:postgresql://localhost:5432/geocoder
+        url: jdbc:postgresql://geocoder-postgres:5432/geocoder
         username: geocoder
         password: geocoder
         driverClassName: org.postgresql.Driver

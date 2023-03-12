@@ -7,6 +7,14 @@ volumes:
     pg_data:
 
 services:
+    application:
+        image: geocoder:1.0.0
+        container_name: geocoder
+        restart: unless-stopped
+        ports:
+            - '80:8080'
+        networks:
+            - overlay
     database:
         image: postgres:15
         container_name: geocoder-postgres
