@@ -5,8 +5,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.Objects;
 
 public class NominatimPlace {
-  @JsonProperty("lan") private Double latitude;
-  @JsonProperty("on") private Double longitude;
+  @JsonProperty("lat") private Double latitude;
+  @JsonProperty("lon") private Double longitude;
   @JsonProperty("display_name") private String displayName;
   @JsonProperty("type") private String type;
 
