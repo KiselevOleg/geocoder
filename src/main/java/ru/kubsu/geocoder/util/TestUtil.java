@@ -1,7 +1,14 @@
+/**
+ * Copyright 2023 Kiselev Oleg
+ */
 package ru.kubsu.geocoder.util;
 
-public class TestUtil {
-  public static int sum(final int a, final int b) {
-    return a + b;
-  }
+/**
+ * @author Kiselev Oleg
+ */
+@SuppressWarnings("WhitespaceAround")
+public enum TestUtil {;
+    public static int sum(final int a, final int b) {
+        return a + b;
+    }
 }

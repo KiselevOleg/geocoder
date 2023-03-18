@@ -1,12 +1,14 @@
+/**
+ * Copyright 2023 Kiselev Oleg
+ */
 package ru.kubsu.geocoder.controller;
 
 import ch.qos.logback.core.status.Status;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import ru.kubsu.geocoder.client.NominatimClient;
-import ru.kubsu.geocoder.dto.NominatimPlace;
 import ru.kubsu.geocoder.dto.RestApiError;
 import ru.kubsu.geocoder.model.Test;
 import ru.kubsu.geocoder.service.TestService;
@@ -15,30 +17,31 @@ import java.util.Random;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
+/**
+ * @author Kiselev Oleg
+ */
 @RestController
 @RequestMapping("tests")
 public class TestController {
     private final TestService service;
-    private final NominatimClient nominatimClient;
 
     @Autowired
-    public TestController(TestService service, NominatimClient nominatimClient) {
+    public TestController(final TestService service) {
         this.service = service;
-        this.nominatimClient = nominatimClient;
     }
 
     @GetMapping(value = "/test/id{id}", produces = APPLICATION_JSON_VALUE)
-    public Test getTest(@PathVariable Integer id, @RequestParam String name) {
+    public Test getTest(final @PathVariable Integer id, final @RequestParam String name) {
         return service.built(id, name);
     }
 
     @GetMapping(value = "/addTest", produces = APPLICATION_JSON_VALUE)
-    public void save(@RequestParam String name) {
+    public void save(final @RequestParam String name) {
         service.save(name);
     }
 
     @GetMapping(value = "/getTest/{name}", produces = APPLICATION_JSON_VALUE)
-    public Test load(@PathVariable String name) {
+    public Test load(final @PathVariable String name) {
         return service.load(name);
     }
 
@@ -66,32 +69,22 @@ public class TestController {
     }
     * */
 
-
-    @GetMapping(value = "/getLocationObjectByName", produces = APPLICATION_JSON_VALUE)
-    public NominatimPlace getLocationObjectByName(@RequestParam String name) {
-        return nominatimClient.search(name,"json").get(0);
-    }
-    @GetMapping(value = "/getLocationObjectByCoordinates", produces = APPLICATION_JSON_VALUE)
-    public NominatimPlace getLocationObjectByCoordinates(@RequestParam Double latitude, @RequestParam Double longitude) {
-        return nominatimClient.reverse(latitude, longitude, "json");
-    }
-
     @GetMapping(value = "/hello", produces = APPLICATION_JSON_VALUE)
+    @SuppressWarnings("PMD.AvoidLiteralsInIfCondition")
+    @SuppressFBWarnings("DMI_RANDOM_USED_ONLY_ONCE")
     public ResponseEntity<?> hello() {
         //react on not found
         //return null; //body is empty
         //throw new EntityNotFoundException(); //error 500
         //return ResponseEntity.ok("test body"); //clearly return type of response
         //return ResponseEntity.notFound().build(); //clearly return type of response
-        //return ResponseEntity.status(HttpStatus.NOT_FOUND).body("test body"); //clearly return type of response with body
+        ////clearly return type of response with body
+        //return ResponseEntity.status(HttpStatus.NOT_FOUND).body("test body");
 
-        if((new Random()).nextDouble()>0.5) {
-            return ResponseEntity.status(HttpStatus.OK).body("result");
+        if ((new Random()).nextDouble() > 0.5) {
+            return ResponseEntity.status(HttpStatus.OK).body("{\"result\": \"data\"}");
         } else {
-            RestApiError error = new RestApiError();
-            error.setError("not found data description");
-            error.setStatus(Status.ERROR);
-            error.setPath("/tests/hello");
+            final RestApiError error = new RestApiError(Status.ERROR, "not found data description", "/tests/hello");
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
         }
     }
