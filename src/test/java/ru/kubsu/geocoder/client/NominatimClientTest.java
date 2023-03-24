@@ -45,15 +45,12 @@ public class NominatimClientTest {
         assertEquals(HttpStatus.OK, response.getStatusCode());
 
         NominatimPlace body= response.getBody();
-        assertEquals(45.019634749999994, body.latitude());
-        assertEquals(39.03111974237599, body.longitude());
+        assertEquals(45.02036085, body.latitude());
+        assertEquals(39.03099994504268, body.longitude());
         assertEquals(null, body.type());
-        assertEquals("Главный корпус КубГУ, 149, " +
-            "Ставропольская улица, " +
-            "Карасунский округ, Краснодар, " +
-            "городской округ Краснодар, " +
-            "Краснодарский край, " +
-            "Южный федеральный округ, " +
-            "350000, Россия", body.displayName());
+        assertEquals("Кубанский государственный университет," +
+            " улица Димитрова, Карасунский округ, Краснодар," +
+            " городской округ Краснодар, Краснодарский край," +
+            " Южный федеральный округ, 350000, Россия", body.displayName());
     }
 }

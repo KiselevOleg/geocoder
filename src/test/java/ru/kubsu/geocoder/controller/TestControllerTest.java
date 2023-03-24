@@ -1,6 +1,5 @@
 package ru.kubsu.geocoder.controller;
 
-import ch.qos.logback.core.status.Status;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,13 +11,11 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import ru.kubsu.geocoder.dto.NominatimPlace;
 import ru.kubsu.geocoder.dto.RestApiError;
 import ru.kubsu.geocoder.repository.TestRepository;
 
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
