@@ -7,8 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import ru.kubsu.geocoder.client.NominatimClient;
-import ru.kubsu.geocoder.dto.NominatimPlace;
+import ru.kubsu.geocoder.model.Address;
+import ru.kubsu.geocoder.service.AddressService;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
@@ -18,22 +18,22 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @RestController
 @RequestMapping("geocoder")
 public class GeocoderController {
-    private final NominatimClient nominatimClient;
+    private final AddressService addressService;
 
     @Autowired
-    public GeocoderController(final NominatimClient nominatimClient) {
-        this.nominatimClient = nominatimClient;
+    public GeocoderController(final AddressService addressService) {
+        this.addressService = addressService;
     }
 
     /**
      * получение адреса по имени.
      *
-     * @param name имя
+     * @param address аддресс
      * @return обьект аддресса
      */
     @GetMapping(value = "/getLocationObjectByName", produces = APPLICATION_JSON_VALUE)
-    public ResponseEntity<NominatimPlace> getLocationObjectByName(final @RequestParam String name) {
-        return nominatimClient.search(name)
+    public ResponseEntity<Address> getLocationObjectByName(final @RequestParam String address) {
+        return addressService.search(address)
             .map(p -> ResponseEntity.status(HttpStatus.OK).body(p))
             .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
     }
@@ -46,9 +46,9 @@ public class GeocoderController {
      * @return обьект аддресса
      */
     @GetMapping(value = "/getLocationObjectByCoordinates", produces = APPLICATION_JSON_VALUE)
-    public ResponseEntity<NominatimPlace> getLocationObjectByCoordinates(
+    public ResponseEntity<Address> getLocationObjectByCoordinates(
         final @RequestParam Double latitude, final @RequestParam Double longitude) {
-        return nominatimClient.reverse(latitude, longitude)
+        return addressService.reverse(latitude, longitude)
             .map(p -> ResponseEntity.status(HttpStatus.OK).body(p))
             .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
     }

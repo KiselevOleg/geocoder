@@ -13,7 +13,9 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import ru.kubsu.geocoder.client.NominatimClient;
 import ru.kubsu.geocoder.dto.NominatimPlace;
 import ru.kubsu.geocoder.dto.RestApiError;
+import ru.kubsu.geocoder.model.Address;
 import ru.kubsu.geocoder.repository.TestRepository;
+import ru.kubsu.geocoder.service.AddressService;
 
 import java.util.Optional;
 
@@ -27,10 +29,8 @@ import static org.mockito.Mockito.when;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class GeocoderControllerTest {
     @MockBean
-    private NominatimClient nominatimClient;
+    private AddressService addressService;
 
-    @Autowired
-    private TestRepository testRepository;
     @LocalServerPort
     private Integer port;
     private final TestRestTemplate testRestTemplate = new TestRestTemplate();
@@ -41,43 +41,45 @@ public class GeocoderControllerTest {
     static void beforeAll() {}
 
     @BeforeEach
-    void setUp() {}
+    void setUp() {
+
+    }
     @AfterEach
     void tearDown() {}
 
-    public static NominatimPlace buildTestPlaceSearch () {
-        return new NominatimPlace(45.02036085,
-            39.03099994504268,
+    public static Address buildTestAddressSearch () {
+        return new Address(null,
             "Кубанский государственный университет, " +
                 "улица Димитрова, Карасунский округ, " +
                 "Краснодар, городской округ Краснодар, " +
                 "Краснодарский край, " +
                 "Южный федеральный округ, 3" +
                 "50000, Россия",
-            "university");
+            45.02036085,
+            39.03099994504268);
     }
-    public static NominatimPlace buildTestPlaceReverse () {
-        return new NominatimPlace(45.02036085,
-            39.03099994504268,
+    public static Address buildTestAddressReverse () {
+        return new Address(null,
             "Кубанский государственный университет, " +
                 "улица Димитрова, Карасунский округ, " +
                 "Краснодар, городской округ Краснодар, " +
                 "Краснодарский край, " +
                 "Южный федеральный округ, 3" +
                 "50000, Россия",
-            null);
+            45.02036085,
+            39.03099994504268);
     }
     @Test
     void getLocationObjectByNameIntegrationTest() {
-        when(nominatimClient.search(anyString())).thenReturn(Optional.of(buildTestPlaceSearch()));
+        when(addressService.search(anyString())).thenReturn(Optional.of(buildTestAddressSearch()));
 
-        ResponseEntity<NominatimPlace> response = testRestTemplate
-            .getForEntity("http://localhost:"+this.port+"/geocoder/getLocationObjectByName?name=кубгу",
-                NominatimPlace.class);
+        ResponseEntity<Address> response = testRestTemplate
+            .getForEntity("http://localhost:"+this.port+"/geocoder/getLocationObjectByName?address=кубгу",
+                Address.class);
         assertEquals(HttpStatus.OK, response.getStatusCode());
 
-        final NominatimPlace body= response.getBody();
-        assertEquals(buildTestPlaceSearch(),body);
+        final Address body= response.getBody();
+        assertEquals(buildTestAddressSearch(),body);
         /*assertEquals(45.02036085, body.latitude());
         assertEquals(39.03099994504268, body.longitude());
         assertEquals("university", body.type());
@@ -90,19 +92,19 @@ public class GeocoderControllerTest {
     }
     @Test
     void getLocationObjectByNameIntegrationTestWhenNominatimNotResponse() {
-        when(nominatimClient.search(anyString())).thenReturn(Optional.empty());
+        when(addressService.search(anyString())).thenReturn(Optional.empty());
 
-        ResponseEntity<NominatimPlace> response = testRestTemplate
-            .getForEntity("http://localhost:"+this.port+"/geocoder/getLocationObjectByName?name=кубгу",
-                NominatimPlace.class);
+        ResponseEntity<Address> response = testRestTemplate
+            .getForEntity("http://localhost:"+this.port+"/geocoder/getLocationObjectByName?address=кубгу",
+                Address.class);
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
 
-        final NominatimPlace body= response.getBody();
+        final Address body= response.getBody();
         assertNull(body);
     }
     @Test
     void getLocationObjectByNameIntegrationTestWhenNoParameters() {
-        when(nominatimClient.search(anyString())).thenReturn(Optional.of(buildTestPlaceSearch()));
+        when(addressService.search(anyString())).thenReturn(Optional.of(buildTestAddressSearch()));
 
         ResponseEntity<RestApiError> response = testRestTemplate
             .getForEntity("http://localhost:"+this.port+"/geocoder/getLocationObjectByName",
@@ -116,27 +118,26 @@ public class GeocoderControllerTest {
     }
     @Test
     void getLocationObjectByCoordinatesIntegrationTest() {
-        when(nominatimClient.reverse(anyDouble(),anyDouble())).thenReturn(Optional.of(buildTestPlaceReverse()));
+        when(addressService.reverse(anyDouble(),anyDouble())).thenReturn(Optional.of(buildTestAddressReverse()));
 
-        ResponseEntity<NominatimPlace> response = testRestTemplate
+        ResponseEntity<Address> response = testRestTemplate
             .getForEntity("http://localhost:"+this.port+"/geocoder/getLocationObjectByCoordinates?latitude=45.019634&longitude=39.031161",
-                NominatimPlace.class);
+                Address.class);
         assertEquals(HttpStatus.OK, response.getStatusCode());
 
-        final NominatimPlace body= response.getBody();
+        final Address body= response.getBody();
         assertEquals(45.02036085, body.latitude());
         assertEquals(39.03099994504268, body.longitude());
-        assertEquals(null, body.type());
         assertEquals("Кубанский государственный университет, " +
             "улица Димитрова, Карасунский округ, " +
             "Краснодар, городской округ Краснодар, " +
             "Краснодарский край, " +
             "Южный федеральный округ, 3" +
-            "50000, Россия", body.displayName());
+            "50000, Россия", body.address());
     }
     @Test
     void getLocationObjectByCoordinatesIntegrationTestWhenNoParameters() {
-        when(nominatimClient.reverse(anyDouble(),anyDouble())).thenReturn(Optional.of(buildTestPlaceReverse()));
+        when(addressService.reverse(anyDouble(),anyDouble())).thenReturn(Optional.of(buildTestAddressReverse()));
 
         ResponseEntity<RestApiError> response = testRestTemplate
             .getForEntity("http://localhost:"+this.port+"/geocoder/getLocationObjectByCoordinates",
