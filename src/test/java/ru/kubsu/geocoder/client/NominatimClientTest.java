@@ -38,13 +38,15 @@ public class NominatimClientTest {
     }
 
     @Test
-    void nomanatimServiceIntegrationTest() {
+    void nomanatimClientIntegrationTest() {
         ResponseEntity<NominatimPlace> response = testRestTemplate
             .getForEntity("https://nominatim.openstreetmap.org/reverse?lat=45.019634&lon=39.031161&format=json",
                 NominatimPlace.class);
         assertEquals(HttpStatus.OK, response.getStatusCode());
 
         NominatimPlace body= response.getBody();
+        System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+        System.out.println(body);
         assertEquals(45.02036085, body.latitude());
         assertEquals(39.03099994504268, body.longitude());
         assertEquals(null, body.type());
