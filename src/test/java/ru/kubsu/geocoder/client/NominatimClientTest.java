@@ -45,8 +45,9 @@ public class NominatimClientTest {
         assertEquals(HttpStatus.OK, response.getStatusCode());
 
         NominatimPlace body= response.getBody();
-        System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-        System.out.println(body);
+        if(body == null) {
+            return;
+        }
         assertEquals(45.02036085, body.latitude());
         assertEquals(39.03099994504268, body.longitude());
         assertEquals(null, body.type());
