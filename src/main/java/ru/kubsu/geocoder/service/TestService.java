@@ -8,10 +8,6 @@ import org.springframework.stereotype.Service;
 import ru.kubsu.geocoder.model.Test;
 import ru.kubsu.geocoder.repository.TestRepository;
 
-import java.util.Iterator;
-
-import static java.lang.Math.max;
-
 /**
  * @author Kiselev Oleg
  */
@@ -34,16 +30,8 @@ public class TestService {
         test.setName(name);
         repository.save(test);
     }*/
-    private Integer nextId() {
-        final Iterator<Test> it = repository.findAll().iterator();
-        Integer id = 1;
-        while (it.hasNext()) {
-            id = max(id, it.next().id());
-        }
-        return id;
-    }
     public void save(final String name) {
-        final Test test = new Test(nextId(), name, null, null);
+        final Test test = new Test(null, name, null, null);
         repository.save(test);
     }
     /*public Test load(Integer id) {

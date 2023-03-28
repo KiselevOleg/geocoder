@@ -13,7 +13,8 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import ru.kubsu.geocoder.client.NominatimClient;
 import ru.kubsu.geocoder.dto.NominatimPlace;
 import ru.kubsu.geocoder.dto.RestApiError;
-import ru.kubsu.geocoder.model.Address;
+import ru.kubsu.geocoder.model.AddressByQuery;
+import ru.kubsu.geocoder.model.AddressByCoordinates;
 import ru.kubsu.geocoder.repository.TestRepository;
 import ru.kubsu.geocoder.service.AddressService;
 
@@ -47,8 +48,8 @@ public class GeocoderControllerTest {
     @AfterEach
     void tearDown() {}
 
-    public static Address buildTestAddressSearch () {
-        return new Address(null,
+    public static AddressByQuery buildTestAddressSearch () {
+        return new AddressByQuery(null, "",
             "Кубанский государственный университет, " +
                 "улица Димитрова, Карасунский округ, " +
                 "Краснодар, городской округ Краснодар, " +
@@ -58,8 +59,8 @@ public class GeocoderControllerTest {
             45.02036085,
             39.03099994504268);
     }
-    public static Address buildTestAddressReverse () {
-        return new Address(null,
+    public static AddressByCoordinates buildTestAddressReverse () {
+        return new AddressByCoordinates(null, null, null,
             "Кубанский государственный университет, " +
                 "улица Димитрова, Карасунский округ, " +
                 "Краснодар, городской округ Краснодар, " +
@@ -73,12 +74,12 @@ public class GeocoderControllerTest {
     void getLocationObjectByNameIntegrationTest() {
         when(addressService.search(anyString())).thenReturn(Optional.of(buildTestAddressSearch()));
 
-        ResponseEntity<Address> response = testRestTemplate
-            .getForEntity("http://localhost:"+this.port+"/geocoder/getLocationObjectByName?address=кубгу",
-                Address.class);
+        ResponseEntity<AddressByQuery> response = testRestTemplate
+            .getForEntity("http://localhost:"+this.port+"/geocoder/getLocationObjectByName?query=кубгу",
+                AddressByQuery.class);
         assertEquals(HttpStatus.OK, response.getStatusCode());
 
-        final Address body= response.getBody();
+        final AddressByQuery body= response.getBody();
         assertEquals(buildTestAddressSearch(),body);
         /*assertEquals(45.02036085, body.latitude());
         assertEquals(39.03099994504268, body.longitude());
@@ -94,12 +95,12 @@ public class GeocoderControllerTest {
     void getLocationObjectByNameIntegrationTestWhenNominatimNotResponse() {
         when(addressService.search(anyString())).thenReturn(Optional.empty());
 
-        ResponseEntity<Address> response = testRestTemplate
-            .getForEntity("http://localhost:"+this.port+"/geocoder/getLocationObjectByName?address=кубгу",
-                Address.class);
+        ResponseEntity<AddressByQuery> response = testRestTemplate
+            .getForEntity("http://localhost:"+this.port+"/geocoder/getLocationObjectByName?query=кубгу",
+                AddressByQuery.class);
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
 
-        final Address body= response.getBody();
+        final AddressByQuery body= response.getBody();
         assertNull(body);
     }
     @Test
@@ -120,20 +121,20 @@ public class GeocoderControllerTest {
     void getLocationObjectByCoordinatesIntegrationTest() {
         when(addressService.reverse(anyDouble(),anyDouble())).thenReturn(Optional.of(buildTestAddressReverse()));
 
-        ResponseEntity<Address> response = testRestTemplate
+        ResponseEntity<AddressByCoordinates> response = testRestTemplate
             .getForEntity("http://localhost:"+this.port+"/geocoder/getLocationObjectByCoordinates?latitude=45.019634&longitude=39.031161",
-                Address.class);
+                AddressByCoordinates.class);
         assertEquals(HttpStatus.OK, response.getStatusCode());
 
-        final Address body= response.getBody();
-        assertEquals(45.02036085, body.latitude());
-        assertEquals(39.03099994504268, body.longitude());
+        final AddressByCoordinates body= response.getBody();
+        assertEquals(45.02036085, body.getLatitude());
+        assertEquals(39.03099994504268, body.getLongitude());
         assertEquals("Кубанский государственный университет, " +
             "улица Димитрова, Карасунский округ, " +
             "Краснодар, городской округ Краснодар, " +
             "Краснодарский край, " +
             "Южный федеральный округ, 3" +
-            "50000, Россия", body.address());
+            "50000, Россия", body.getAddress());
     }
     @Test
     void getLocationObjectByCoordinatesIntegrationTestWhenNoParameters() {

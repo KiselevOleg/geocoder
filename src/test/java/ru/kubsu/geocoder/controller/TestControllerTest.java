@@ -72,10 +72,10 @@ class TestControllerTest {
 
 
         ru.kubsu.geocoder.model.Test body = response.getBody();
-        assertEquals(1,body.id());
-        assertEquals("test",body.name());
-        assertEquals(null,body.done());
-        assertEquals(null,body.mark());
+        assertEquals(1,body.getId());
+        assertEquals("test",body.getName());
+        assertEquals(null,body.getDone());
+        assertEquals(null,body.getMark());
     }
     @Test
     void getTestIntegrationTestWhenNameIsNull() {//NegativeTest
